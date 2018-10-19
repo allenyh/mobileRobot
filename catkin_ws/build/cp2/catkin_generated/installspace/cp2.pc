@@ -1,0 +1,8 @@
+prefix=/home/arg/catkin_ws/install
+
+Name: cp2
+Description: Description of cp2
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/arg/catkin_ws/install/lib 
+Requires: 
