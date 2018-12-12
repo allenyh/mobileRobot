@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from std_msgs.msg import Float32MultiArray, String
+from std_msgs.msg import Int16MultiArray, String
 import RPi.GPIO as gpio
 import time
 import thread
@@ -16,7 +16,7 @@ class MobileCP4(object):
 
         self.leftTouchPin = 29
         self.rightTouchPin= 31
-        self.middleTouchPin = 22
+        self.middleTouchPin = 32
 
         self.lightSignal = 1
         self.irSignal = 1
@@ -42,7 +42,7 @@ class MobileCP4(object):
         gpio.setup(self.middleTouchPin, gpio.IN)
         
         # Publisher
-        self.pub = rospy.Publisher("/Rpi/pub", Float32MultiArray, queue_size=1)
+        self.pub = rospy.Publisher("/Rpi/pub", Int16MultiArray, queue_size=1)
 
         # Subscriber
         #self.sub = rospy.Subscriber("Rpi/sub", String, self.cb, queue_size=1)
@@ -97,41 +97,41 @@ class MobileCP4(object):
                 if self.first == True:
                     self.bypass_obs()
                 else:
-
+                    self.search()
    
     def bypass_obs(self):
         #walk staraight for xx sec, which is yy distance
-        action = Float32MultiArray()
+        action = Int16MultiArray()
         action.data[0] = 5
         action.data[1] = 0
         self.pub.publish(action)
-        time.sleep(xx)
+        time.sleep(0.3)
 
         #left turn 90 degree
-        action = Float32MultiArray
+        action = Int16MultiArray()
         action.data[0] = 0
         action.data[1] = 5
         self.pub.publish(action)
-        time.sleep(xx)
+        time.sleep(0.2)
 
         #walk straight for aa sec, which is bb distance
-        action = Float32MultiArray()
+        action = Int16MultiArray()
         action.data[0] = 5
         action.data[1] = 0
         self.pub.publish(action)
-        time.sleep(xx)
+        time.sleep(0.2)
 
         #stop here
-        action = Float32MultiArray()
+        action = Int16MultiArray()
         action.data[0] = 0
         action.data[1] = 0
         self.pub.publish(action)
 
     def search(self):
         #slow rotate for fixed degree and wait for few msec, repeat for x times
-        for i in range(0, x):
+        for i in range(0, 10):
             if self.lightSignal == 1:# no detect of light
-                action = Float32MultiArray()
+                action = Int16MultiArray()
                 action.data[0] = 0
                 action.data[1] = 5
                 self.pub.publish(action)
