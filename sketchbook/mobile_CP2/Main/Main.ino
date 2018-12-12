@@ -19,23 +19,32 @@
 #define enB 6
 
 ros::NodeHandle  nh;
-int pwm_l = 0;
-int pwm_r = 0;
-int pwm_l_old = 0;
-int pwm_r_old = 0;
+
+int radius = 6.5
+int wheel_space = 15 
+
+int v = 0;
+int omega = 0;
+int v_old = 0;
+int omega_old = 0;
+float gain = 1.0;
+float trim = 0;
+float k = 15;
+int pwm_l;
+int pwm_r;
 Motor m1;
 Motor m2;
 
 void messageCb(const std_msgs::Int16MultiArray& msg){
-  pwm_l = msg.data[0];
-  pwm_r = msg.data[1];
+  v = msg.data[0];
+  omega = msg.data[1];
 }
 
 
 ros::Subscriber<std_msgs::Int16MultiArray> sub("/arduino/sub", messageCb );
 
-std_msgs::String speed_change;
-ros::Publisher pub("/arduino/pub", &speed_change);
+//std_msgs::String speed_change;
+//ros::Publisher pub("/arduino/pub", &speed_change);
 
 void setup()
 {
@@ -45,24 +54,22 @@ void setup()
   m2.setup();
   
   nh.initNode();
-  nh.advertise(pub);
+  //nh.advertise(pub);
   nh.subscribe(sub);
   delay(10);
-  //pwm_l = 150;
-  //pwm_r = 150;
 }
 
 void loop()
 {
-  if(pwm_l != pwm_l_old || pwm_r != pwm_r_old){
-    m1.setSpeed(pwm_l * 0.8);
-    m2.setSpeed(pwm_r * 1.24);
-    delay(50);
+  if(v != v_old || omega != omega_old){
+
+    pwm_l = (gain + trim) * (v + 0.5 * omega) * k
+    pwm_r = (gain - trim) * (v - 0.5 * omega) * k
+
     m1.setSpeed(pwm_l);
+    m2.setSpeed(pwm_r);
     pwm_l_old = pwm_l;
     pwm_r_old = pwm_r;
-    speed_change.data = "speed has changed";
-    pub.publish(&speed_change);
   }
   nh.spinOnce();
   delay(10);
