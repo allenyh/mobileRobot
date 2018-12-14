@@ -1,11 +1,15 @@
 <launch>
-    <arg name="pkg_name" value="cp4"/>
+    <arg name="pkg_name" value="cp4_1"/>
     <arg name="node_name" default="cp4"/>
     <arg name="arduino" default="true"/>
+    <arg name="abc" default="a"/>
+    <arg name="gate" default="0" doc="0 for 600Hz, 1 for 1500Hz"/>
     
     <remap from="Rpi/pub" to="arduino/sub"/>
     <remap from="Rpi/sub" to="arduino/pub"/>
     <node pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen">
+        <param name="abc" value="$(arg abc)"/>
+        <param name="gate" value="$(arg gate)"/>
     </node>
 
     <node pkg="rosserial_python" type="serial_node.py" name="serial_node">
